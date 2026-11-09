@@ -1,4 +1,3 @@
-
 var $=function(s){return document.querySelector(s)};
 var SLOTS={gram_list:'Gram — иконка в списке',gram_send:'Gram — иконка при отправке',gram_tap:'Gram — иконка при нажатии',usdt_list:'Tether USD — иконка в списке'};
 var GRAM='<svg viewBox="0 0 66 66"><circle cx="33" cy="33" r="33" fill="#2f95f5"/><path d="M18 26l5-6h20l5 6-15 21z" fill="#fff"/><path d="M33 24l2.4 5.6L41 32l-5.6 2.4L33 40l-2.4-5.6L25 32l5.6-2.4z" fill="#2f95f5"/></svg>',ME=null,mode='login',sheet=$('#sheet'),dim=$('#dim');
@@ -18,7 +17,7 @@ function closeSheet(){sheet.classList.remove('on');dim.classList.remove('on')}di
 function toast(t){var e=$('#toast');e.textContent=t;e.classList.add('on');setTimeout(function(){e.classList.remove('on')},1800)}
 function copyA(){try{navigator.clipboard.writeText(ME.address)}catch(e){}toast('Адрес скопирован')}
 (function(){var c=$('#c1');for(var i=0;i<18;i++){var s=document.createElement('span');s.className='st';s.textContent='✦';
- s.style.left=(4+Math.random()*90)+'%';s.style.top=(5+Math.random()*80)+'%';s.style.fontSize=(9+Math.random()*16)+'px';
+ s.style.left=(4+Math.random()*90)+'%';s.style.top=(5+Math.random()*80)+'%';s.style.fontSize='calc(var(--u)*'+(1+Math.random()*1.8)+')';
  s.style.animationDuration=(2+Math.random()*3)+'s,'+(6+Math.random()*6)+'s';s.style.animationDelay=(-Math.random()*5)+'s,'+(-Math.random()*8)+'s';c.appendChild(s)}})();
 async function boot(){await seed();var n=ls('session',null),u=n&&ls('users',{})[n.toLowerCase()];
  if(u){ME=u;$('#auth').classList.remove('on');$('#ini').textContent=u.username.slice(0,2).toUpperCase();mount($('#ico-gram'),'gram_list');mount($('#ico-usdt'),'usdt_list')}else{ME=null;$('#auth').classList.add('on')}}
