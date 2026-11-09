@@ -1,104 +1,49 @@
-<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8">
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
-<meta name="theme-color" content="#0c0c0c">
-<title>Gram Wallet</title><style>:root{color-scheme:dark;--u:min(1vw,4.6px);--bg:#0c0c0c;--panel:#181818;--btn:#222;--muted:#8d8d92;--blue:#3d9bff;--green:#3ddc84;--red:#ff4d4d}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;text-size-adjust:100%}
-html,body{margin:0;height:100%;background:#000;color:#fff;font-family:Roboto,-apple-system,"Segoe UI",Arial,sans-serif;font-size:calc(var(--u)*4)}
-button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
-#app{position:relative;max-width:460px;height:100%;margin:0 auto;background:var(--bg);overflow:hidden;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
-.scroll{flex:1;overflow-y:auto;padding:calc(var(--u)*4.2) 0 calc(var(--u)*28);scrollbar-width:none}.scroll::-webkit-scrollbar{display:none}
-.top{display:flex;align-items:center;gap:calc(var(--u)*3.1);padding:calc(var(--u)*2.5) calc(var(--u)*5) 0}
-.tabs{flex:1;min-width:0;height:calc(var(--u)*13.7);display:flex;background:#141414;border:1px solid #262626;border-radius:calc(var(--u)*14);padding:calc(var(--u)*1.1);overflow-x:auto;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}
-.tab{flex:none;width:calc(var(--u)*28.6);display:grid;place-items:center;border-radius:calc(var(--u)*12);font-size:calc(var(--u)*4.4);font-weight:500;color:#a5a5aa;white-space:nowrap}
-.tab.on{background:#16283a;color:var(--blue)}
-.ava{width:calc(var(--u)*13.7);height:calc(var(--u)*13.7);border-radius:50%;padding:calc(var(--u)*1.1);background:#141414;border:1px solid #262626;flex:none}
-.ava span{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg,#ffb347,#ff8c1a);font-weight:800;font-size:calc(var(--u)*4.2)}
-.cards{display:flex;gap:calc(var(--u)*2.8);overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 calc(var(--u)*4.8);padding:0 calc(var(--u)*4.8);margin-top:calc(var(--u)*4.2);scrollbar-width:none}.cards::-webkit-scrollbar{display:none}
-.card{position:relative;flex:none;width:calc(var(--u)*90.5);height:calc(var(--u)*52.5);border-radius:calc(var(--u)*9);scroll-snap-align:start;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 60% 75%,#35a6ff 0,#1f86f5 35%,#1678ef 70%),linear-gradient(135deg,#55c4ff,#1578ee)}
-.card.two{background:linear-gradient(135deg,#1c5fb8,#0e3f86)}
-.card::before{content:"";position:absolute;top:-20%;left:-40%;width:60%;height:140%;background:radial-gradient(circle,rgba(255,255,255,.28),transparent 62%);animation:glow 7s ease-in-out infinite alternate;pointer-events:none}
-@keyframes glow{to{transform:translateX(260%)}}
-.st{position:absolute;color:#fff;pointer-events:none;animation:tw 3s ease-in-out infinite,dr 9s ease-in-out infinite;opacity:.15;line-height:1}
-@keyframes tw{0%,100%{opacity:.1;scale:.6}50%{opacity:.85;scale:1.2}}
-@keyframes dr{0%,100%{translate:0 0}50%{translate:calc(var(--u)*1) calc(var(--u)*-1.4)}}
-.bal,.cname{position:relative;z-index:1}
-.bal{font-size:calc(var(--u)*16);font-weight:700;line-height:1;display:flex;align-items:baseline;gap:calc(var(--u)*1);margin-top:calc(var(--u)*-8)}.bal small{font-size:.55em}
-.cname{position:absolute;bottom:calc(var(--u)*5.4);left:0;right:0;display:flex;justify-content:center;align-items:center;gap:calc(var(--u)*1.4);font-size:calc(var(--u)*4.3);font-weight:500;color:rgba(255,255,255,.72)}
-.cname svg{width:calc(var(--u)*4.6);height:calc(var(--u)*4.6)}
-.acts{display:flex;padding:calc(var(--u)*6.5) calc(var(--u)*10) 0}
-.act{width:calc(var(--u)*20);display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*3.4);font-size:calc(var(--u)*2.4)}
-.act i{width:calc(var(--u)*13.7);height:calc(var(--u)*13.7);border-radius:50%;background:var(--btn);display:grid;place-items:center;transition:transform .12s}.act:active i{transform:scale(.92)}
-.act svg{width:calc(var(--u)*6);height:calc(var(--u)*6);stroke:#fff;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
-.panel{background:var(--panel);border-radius:calc(var(--u)*7);margin-top:calc(var(--u)*7)}.assets{margin-top:calc(var(--u)*7)}
-.row{display:flex;align-items:center;gap:calc(var(--u)*3.6);padding:calc(var(--u)*3.1) calc(var(--u)*3.8);width:100%;text-align:left}
-.ico{position:relative;width:calc(var(--u)*12.5);height:calc(var(--u)*12.5);flex:none}.ico svg,.ico>div{width:100%;height:100%}
-.mid{flex:1;min-width:0}.nm{display:flex;align-items:center;gap:calc(var(--u)*1.4);font-size:calc(var(--u)*4.3);font-weight:600;line-height:1.2;white-space:nowrap}
-.badge{font-size:calc(var(--u)*3);font-weight:500;padding:.5u calc(var(--u)*1.6);border-radius:calc(var(--u)*2.4);background:#232323;color:#999}.badge.apy{background:#16301f;color:var(--green)}
-.sub{margin-top:calc(var(--u)*1.4);font-size:calc(var(--u)*3.9);color:var(--muted);line-height:1.2;white-space:nowrap}.sub b{font-weight:500;color:var(--red);margin-left:.8u}
-.rt{text-align:right;font-size:calc(var(--u)*4.3);font-weight:600;line-height:1.2;white-space:nowrap}.rt div+div{margin-top:calc(var(--u)*1.4);font-size:calc(var(--u)*3.9);font-weight:400;color:var(--muted)}
-.feed{margin-top:calc(var(--u)*3.8);padding:calc(var(--u)*5.5) calc(var(--u)*6.3) calc(var(--u)*8);min-height:calc(var(--u)*50)}.feed h3{margin:0;font-size:calc(var(--u)*4.2);font-weight:500;color:var(--blue)}
-.empty{text-align:center;margin-top:calc(var(--u)*13)}.empty b{font-size:calc(var(--u)*4.2);font-weight:600}.empty p{margin:calc(var(--u)*1.6) 0 0;font-size:calc(var(--u)*3.8);line-height:1.35;color:var(--muted)}
-.bar{position:absolute;left:0;right:0;bottom:0;padding:calc(var(--u)*1) calc(var(--u)*1.9) calc(calc(var(--u)*5) + env(safe-area-inset-bottom,0px));display:flex;gap:calc(var(--u)*3.8);background:linear-gradient(transparent,var(--bg) 30%)}
-.search{flex:1;min-width:0;height:calc(var(--u)*14.8);border-radius:calc(var(--u)*8);background:#171717;border:1px solid #2a2a2a;display:flex;align-items:center;gap:calc(var(--u)*3.4);padding:0 calc(var(--u)*5)}
-.search input{flex:1;min-width:0;background:none;border:0;outline:0;color:#fff;font:inherit;font-size:calc(var(--u)*4.1)}.search input::placeholder{color:var(--muted)}
-.search svg,.plus svg{width:calc(var(--u)*4.8);height:calc(var(--u)*4.8);stroke:#aaa;fill:none;stroke-width:2.4;stroke-linecap:round}
-.plus{width:calc(var(--u)*15);height:calc(var(--u)*15);border-radius:50%;background:#171717;border:1px solid #2a2a2a;display:grid;place-items:center;flex:none}.plus svg{stroke:#ccc;width:calc(var(--u)*5.6);height:calc(var(--u)*5.6)}
-.dim{position:absolute;inset:0;background:rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .2s;z-index:5}.dim.on{opacity:1;pointer-events:auto}
-.sheet{position:absolute;left:0;right:0;bottom:0;z-index:6;background:#1a1a1a;border-radius:calc(var(--u)*7) calc(var(--u)*7) 0 0;padding:calc(var(--u)*3) calc(var(--u)*5) calc(calc(var(--u)*6) + env(safe-area-inset-bottom,0px));transform:translateY(105%);transition:transform .25s}.sheet.on{transform:none}
-.grab{width:calc(var(--u)*10);height:calc(var(--u)*1.1);border-radius:calc(var(--u)*1);background:#444;margin:0 auto calc(var(--u)*4)}
-.sheet h2{margin:0 0 calc(var(--u)*3);font-size:calc(var(--u)*5.2)}.sheet p{color:var(--muted);font-size:calc(var(--u)*3.8);line-height:1.4;margin:0 0 calc(var(--u)*3)}
-.big{width:calc(var(--u)*26);height:calc(var(--u)*26);margin:0 auto calc(var(--u)*2)}.big svg{width:100%;height:100%}
-.fld{width:100%;background:#262626;border:0;border-radius:calc(var(--u)*3.6);padding:calc(var(--u)*3.6);color:#fff;font:inherit;font-size:calc(var(--u)*4);margin-bottom:calc(var(--u)*2.6);outline:0}
-.pri{display:block;width:100%;padding:calc(var(--u)*3.8);border-radius:calc(var(--u)*4);background:#1f86f5;font-size:calc(var(--u)*4.1);font-weight:600;text-align:center;color:#fff;text-decoration:none;margin-bottom:calc(var(--u)*2.2)}.pri.gr{background:#2a2a2a}
-.addr{background:#262626;border-radius:calc(var(--u)*3.6);padding:calc(var(--u)*3.4);font-family:ui-monospace,monospace;font-size:calc(var(--u)*3.1);word-break:break-all;margin-bottom:calc(var(--u)*3)}
-.msg{min-height:calc(var(--u)*4);margin-top:calc(var(--u)*1.4);font-size:calc(var(--u)*3.4);color:var(--red);text-align:center}
-.toast{position:absolute;top:calc(calc(var(--u)*3) + env(safe-area-inset-top,0px));left:50%;transform:translate(-50%,-90px);background:#2a2a2a;padding:calc(var(--u)*2.6) calc(var(--u)*4.4);border-radius:calc(var(--u)*4.4);font-size:calc(var(--u)*3.5);z-index:9;transition:transform .25s}.toast.on{transform:translate(-50%,0)}
-.ph{padding:calc(var(--u)*18) calc(var(--u)*7);text-align:center;color:var(--muted);font-size:calc(var(--u)*4.4)}
-#auth{position:absolute;inset:0;z-index:8;background:var(--bg);padding:calc(calc(var(--u)*8) + env(safe-area-inset-top,0px)) calc(var(--u)*6) calc(var(--u)*6);display:none;flex-direction:column;justify-content:center}
-#auth.on{display:flex}#auth h1{text-align:center;margin:calc(var(--u)*2.6) 0 calc(var(--u)*1);font-size:calc(var(--u)*7)}#auth .lead{text-align:center;color:var(--muted);margin:0 0 calc(var(--u)*6);font-size:calc(var(--u)*3.8)}
-.logo{width:calc(var(--u)*22);height:calc(var(--u)*22);margin:0 auto}
-.seg{display:flex;background:#141414;border:1px solid #262626;border-radius:calc(var(--u)*6);padding:calc(var(--u)*1.1);margin-bottom:calc(var(--u)*4)}.seg button{flex:1;padding:calc(var(--u)*2.6);border-radius:calc(var(--u)*5);color:#a5a5aa;font-weight:500;font-size:calc(var(--u)*4)}.seg button.on{background:#16283a;color:var(--blue)}
-#adm{position:absolute;inset:0;z-index:7;background:var(--bg);overflow:auto;padding:calc(calc(var(--u)*4) + env(safe-area-inset-top,0px)) calc(var(--u)*4) calc(var(--u)*10);display:none}#adm.on{display:block}
-#adm h1{font-size:calc(var(--u)*6);margin:calc(var(--u)*2.4) 0 calc(var(--u)*1)}#adm .lead{color:var(--muted);margin:0 0 calc(var(--u)*4);font-size:calc(var(--u)*3.5)}.back{color:var(--blue);font-size:calc(var(--u)*4)}
-.slot{background:var(--panel);border-radius:calc(var(--u)*6);padding:calc(var(--u)*4);margin-bottom:calc(var(--u)*3)}.slot h3{margin:0 0 calc(var(--u)*3);font-size:calc(var(--u)*4.2)}
-.pv{width:calc(var(--u)*26);height:calc(var(--u)*26);margin:0 auto calc(var(--u)*3);background:#101010;border-radius:calc(var(--u)*5);display:grid;place-items:center;color:var(--muted);font-size:calc(var(--u)*3);overflow:hidden}.pv div,.pv svg{width:100%;height:100%}
-.slot input[type=file]{width:100%;margin-bottom:calc(var(--u)*2.4);color:var(--muted);font-size:calc(var(--u)*3.4)}
-@media(min-width:520px){body{display:grid;place-items:center}#app{height:min(900px,100%);border-radius:36px;border:1px solid #222}}
-</style><script src="pako.min.js"></script><script src="lottie.min.js"></script></head><body>
+<meta name="theme-color" content="#0b0c10"><title>Gram Wallet</title>
+<link rel="stylesheet" href="style.css"></head><body>
 <div id="app">
- <div class="top"><div class="tabs" id="tabs"><button class="tab on" data-t="wallet">Кошелёк</button><button class="tab" data-t="market">Маркет</button><button class="tab" data-t="browse">Обзор</button></div>
-  <button class="ava" id="ava"><span id="ini">GW</span></button></div>
- <div class="scroll" id="scroll">
-  <section id="wallet">
+ <div class="bg"><i></i><i></i><i></i></div>
+ <div class="top">
+  <div class="tabs glass" id="tabs"><div id="tt"><i class="pill" id="pill"></i><button class="tab on">Кошелёк</button><button class="tab">Маркет</button><button class="tab">Обзор</button></div></div>
+  <button class="ava glass" id="ava"><span id="ini">GW</span></button>
+ </div>
+ <div class="pages" id="pages"><div class="track" id="track">
+  <section class="pg on" id="p0">
    <div class="cards">
-    <div class="card" id="c1"><div class="bal"><span>0</span><small>₽</small></div>
-     <div class="cname">Gram Wallet <svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2.6" stroke-linecap="round"><rect x="3" y="3" width="9" height="9" rx="2"/><rect x="18" y="3" width="9" height="9" rx="2"/><rect x="3" y="18" width="9" height="9" rx="2"/><path d="M19 19h1M25 19h1M19 25h1M25 25h1M22 22h1"/></svg></div></div>
-    <div class="card two"><div class="bal" style="font-size:54px;margin-top:-10px"><span>13.91%</span></div><div class="cname">Стейкинг Gram</div></div>
+    <div class="card" id="c1"><div class="bal"><span id="bal">0</span><small>₽</small></div>
+     <div class="cname">Gram Wallet <svg viewBox="0 0 30 30" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2.6" stroke-linecap="round"><rect x="3" y="3" width="9" height="9" rx="2"/><rect x="18" y="3" width="9" height="9" rx="2"/><rect x="3" y="18" width="9" height="9" rx="2"/><path d="M19 19h1M25 19h1M19 25h1M25 25h1M22 22h1"/></svg></div></div>
+    <div class="card two" id="c2"><div class="bal" style="font-size:calc(var(--u)*11)"><span id="stk">0</span></div><div class="cname">В стейкинге · APY 13.91%</div></div>
    </div>
    <div class="acts">
-    <button class="act" data-a="deposit"><i><svg viewBox="0 0 34 34"><path d="M17 5v24M5 17h24"/></svg></i>Пополнить</button>
-    <button class="act" data-a="send"><i><svg viewBox="0 0 34 34"><path d="M17 29V6M7 15l10-10 10 10"/></svg></i>Отправить</button>
-    <button class="act" data-a="trade"><i><svg viewBox="0 0 34 34"><path d="M5 12h24M23 6l6 6M29 22H5M11 28l-6-6"/></svg></i>Торговля</button>
-    <button class="act" data-a="stake"><i><svg viewBox="0 0 34 34"><ellipse cx="17" cy="10" rx="9" ry="5"/><path d="M8 10v4c0 3 4 5 9 5s9-2 9-5v-4M8 19v4c0 3 4 5 9 5s9-2 9-5v-4"/></svg></i>Стейкинг</button>
+    <button class="act" onclick="deposit()"><i class="glass"><svg viewBox="0 0 34 34"><path d="M17 5v24M5 17h24"/></svg></i>Пополнить</button>
+    <button class="act" onclick="sendScr()"><i class="glass"><svg viewBox="0 0 34 34"><path d="M17 29V6M7 15l10-10 10 10"/></svg></i>Отправить</button>
+    <button class="act" onclick="trade()"><i class="glass"><svg viewBox="0 0 34 34"><path d="M5 12h24M23 6l6 6M29 22H5M11 28l-6-6"/></svg></i>Торговля</button>
+    <button class="act" onclick="stakeScr()"><i class="glass"><svg viewBox="0 0 34 34"><ellipse cx="17" cy="10" rx="9" ry="5"/><path d="M8 10v4c0 3 4 5 9 5s9-2 9-5v-4M8 19v4c0 3 4 5 9 5s9-2 9-5v-4"/></svg></i>Стейкинг</button>
    </div>
-   <div class="panel assets">
-    <button class="row" data-tok="gram"><div class="ico" id="ico-gram"><svg viewBox="0 0 66 66"><circle cx="33" cy="33" r="33" fill="#2f95f5"/><path d="M18 26l5-6h20l5 6-15 21z" fill="#fff"/><path d="M33 24l2.4 5.6L41 32l-5.6 2.4L33 40l-2.4-5.6L25 32l5.6-2.4z" fill="#2f95f5"/></svg></div><div class="mid"><div class="nm">Gram <span class="badge apy">APY 13.91%</span></div><div class="sub">82.86 ₽<b>−4.25%</b></div></div><div class="rt"><div>0 GRAM</div><div>0 ₽</div></div></button>
-    <button class="row" data-tok="usdt"><div class="ico" id="ico-usdt"><svg viewBox="0 0 66 66"><circle cx="33" cy="33" r="33" fill="#119f8a"/><path d="M17 22l4-5h24l4 5-16 22z" fill="#fff"/><path d="M24 25h18M33 25v12M27 30c0 2 12 2 12 0" stroke="#119f8a" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="50" cy="50" r="11" fill="#1e88e5" stroke="#181818" stroke-width="3"/><path d="M45 46h10l-5 9z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg></div><div class="mid"><div class="nm">Tether USD <span class="badge">TON</span></div><div class="sub">81.87 ₽</div></div><div class="rt"><div>0 USD₮</div><div>0 ₽</div></div></button>
+   <div class="panel glass" style="overflow:hidden">
+    <button class="row" onclick="tokScr('gram')"><div class="ico" id="ico-gram"></div><div class="mid"><div class="nm">Gram <span class="badge apy">APY 13.91%</span></div><div class="sub">82.86 ₽<b class="dn">−4.25%</b></div></div><div class="rt"><div id="gv">0 GRAM</div><div id="gr">0 ₽</div></div></button>
+    <button class="row" onclick="tokScr('usdt')"><div class="ico" id="ico-usdt"></div><div class="mid"><div class="nm">Tether USD <span class="badge">TON</span></div><div class="sub">81.87 ₽</div></div><div class="rt"><div id="uv">0 USD₮</div><div id="ur">0 ₽</div></div></button>
    </div>
-   <div class="panel feed"><h3>Лента</h3><div class="empty"><b>Нет активности</b><p>История операций в этом кошельке пока отсутствует.</p></div></div>
+   <div class="panel glass feed"><h3>Лента</h3><div id="feed"></div></div>
   </section>
-  <section id="market" hidden><div class="ph">Маркет скоро откроется</div></section>
-  <section id="browse" hidden><div class="ph">Обзор скоро появится</div></section>
+  <section class="pg" id="p1"></section>
+  <section class="pg" id="p2"></section>
+ </div></div>
+ <div class="bar">
+  <label class="search glass"><svg viewBox="0 0 30 30"><circle cx="13" cy="13" r="8"/><path d="M19 19l7 7"/></svg><input id="q" placeholder="Искать или спросить"></label>
+  <button class="plus glass" onclick="deposit()"><svg viewBox="0 0 34 34"><path d="M17 6v22M6 17h22"/></svg></button>
  </div>
- <div class="bar"><label class="search"><svg viewBox="0 0 30 30"><circle cx="13" cy="13" r="8"/><path d="M19 19l7 7"/></svg><input id="q" placeholder="Искать или спросить"></label>
-  <button class="plus" id="plus"><svg viewBox="0 0 34 34"><path d="M17 6v22M6 17h22"/></svg></button></div>
  <div id="auth">
-  <div class="logo"><svg viewBox="0 0 66 66"><circle cx="33" cy="33" r="33" fill="#2f95f5"/><path d="M18 26l5-6h20l5 6-15 21z" fill="#fff"/><path d="M33 24l2.4 5.6L41 32l-5.6 2.4L33 40l-2.4-5.6L25 32l5.6-2.4z" fill="#2f95f5"/></svg></div><h1>Gram Wallet</h1><p class="lead">Войдите или создайте кошелёк</p>
-  <div class="seg"><button class="on" data-m="login">Вход</button><button data-m="register">Регистрация</button></div>
+  <div class="logo" id="alogo"></div><h1>Gram Wallet</h1><p class="lead">Войдите или создайте кошелёк</p>
+  <div class="seg glass"><i class="pill" id="apill"></i><button class="on" data-m="login">Вход</button><button data-m="register">Регистрация</button></div>
   <input class="fld" id="u" placeholder="Логин" autocomplete="username" autocapitalize="none">
   <input class="fld" id="p" type="password" placeholder="Пароль" autocomplete="current-password">
   <button class="pri" id="go">Войти</button><div class="msg" id="am"></div>
+  <div class="srv" id="srv"></div>
  </div>
- <div id="adm"></div><div class="dim" id="dim"></div><div class="sheet" id="sheet"><div class="grab"></div><div id="sbody"></div></div><div class="toast" id="toast"></div>
+ <div class="toast glass" id="toast"></div>
 </div>
-<script src="index.js"></script></body></html>
+<script src="config.js"></script><script src="pako.min.js"></script><script src="lottie.min.js"></script><script src="qrcode.js"></script><script src="app.js"></script>
+</body></html>

@@ -1,0 +1,49 @@
+name: Build APK
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - run: npm install
+      - run: npx cap add android
+      - name: Постоянный ключ подписи (чтобы APK обновлялся поверх старого)
+        run: |
+          mkdir -p ~/.android
+          cp debug.keystore ~/.android/debug.keystore
+      - name: Номер версии
+        run: sed -i "s/versionCode 1/versionCode ${{ github.run_number }}/" android/app/build.gradle
+      - name: Patch MainActivity
+        run: |
+          cat > android/app/src/main/java/com/gramwallet/app/MainActivity.java <<'EOF'
+          package com.gramwallet.app;
+          import com.getcapacitor.BridgeActivity;
+          public class MainActivity extends BridgeActivity {
+            @Override
+            public void onStart() {
+              super.onStart();
+              android.webkit.WebSettings s = getBridge().getWebView().getSettings();
+              s.setTextZoom(100);
+              s.setMinimumFontSize(1);
+              s.setMinimumLogicalFontSize(1);
+            }
+          }
+          EOF
+      - run: npx cap sync android
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.2.1
+      - run: cd android && gradle assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GramWallet-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
