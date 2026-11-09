@@ -16,10 +16,26 @@ jobs:
           java-version: 17
       - run: npm install
       - run: npx cap add android
+      - name: Patch MainActivity
+        run: |
+          cat > android/app/src/main/java/com/gramwallet/app/MainActivity.java <<'EOF'
+          package com.gramwallet.app;
+          import com.getcapacitor.BridgeActivity;
+          public class MainActivity extends BridgeActivity {
+            @Override
+            public void onStart() {
+              super.onStart();
+              android.webkit.WebSettings s = getBridge().getWebView().getSettings();
+              s.setTextZoom(100);
+              s.setMinimumFontSize(1);
+              s.setMinimumLogicalFontSize(1);
+            }
+          }
+          EOF
       - run: npx cap sync android
       - uses: gradle/actions/setup-gradle@v4
         with:
-         gradle-version: 8.2.1
+          gradle-version: 8.2.1
       - run: cd android && gradle assembleDebug
       - uses: actions/upload-artifact@v4
         with:
