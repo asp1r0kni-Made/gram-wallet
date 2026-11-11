@@ -18,16 +18,16 @@ const fmtBal=x=>{const c=CUR[CURK],n=nf(x*rate(CURK),c[2]);return c[3]?`<small>$
 function countH(el,to){const from=+el.dataset.v||0;el.dataset.v=to;if(from===to){el.innerHTML=fmtBal(to);return}const t0=performance.now();
  (function f(t){const k=Math.min(1,(t-t0)/700),e=1-Math.pow(1-k,3);el.innerHTML=fmtBal(from+(to-from)*e);if(k<1)requestAnimationFrame(f)})(t0)}
 /* ---------- лента ---------- */
-const EMO={send:['up-green','Отправлено'],credit:['gift-teal','Пополнение'],swap:['pm-bolt-circle','Обмен'],stake:['star-circle','Стейкинг'],unstake:['star-circle','Вывод из стейкинга']};
+const EMO={send:['up-green','Отправлено'],credit:['gift-teal','Пополнение'],swap:['pm-bolt-circle','Обмен'],stake:['star-circle','Стейкинг'],unstake:['star-circle','Вывод из стейкинга'],p2p:['up-green','P2P']};
 function renderFeed(){const{items,pending}=HIST;
  if(!items.length&&!pending.length){$('#feed').innerHTML='<div class="empty"><div class="eanim" id="eanim"></div><b>Нет активности</b><p>История операций в этом кошельке пока отсутствует.</p></div>';mount($('#eanim'),'empty');return}
  const row=(ic,rot,t,s,memo,r,cls)=>`<div class="tx"><div class="tic">${IMG(ic).replace('<img','<img'+(rot?' style="transform:rotate(180deg)"':''))}</div><div class="mid"><b>${t}</b><span>${s}</span>${memo?`<em>${esc(memo)}</em>`:''}</div><div class="rt amt ${cls||''}">${r}</div></div>`;
  $('#feed').innerHTML=pending.map(p=>row('clock',0,'Заявка на пополнение','Ожидает подтверждения · '+fmtT(p.ts),'',nf(p.amount)+' '+NAME[p.token])).join('')+
  items.map(r=>{const inn=r.dir==='in',[ic,t0]=EMO[r.kind];let t=t0,s=fmtT(r.ts);
-  if(r.kind==='send'){t=inn?'Получено':'Отправлено';s=(inn?'от @':'для @')+esc(r.peer||'?')+' · '+s}
+  if(r.kind==='send'||r.kind==='p2p'){t=r.kind==='p2p'?(inn?'P2P · куплено':'P2P · продано'):(inn?'Получено':'Отправлено');s=(inn?'от @':'для @')+esc(r.peer||'?')+' · '+s}
   else if(r.kind==='swap')s=NAME[r.token]+' → '+NAME[r.token2]+' · '+s;
   const sw=r.kind==='swap',plus=inn||r.kind==='unstake';
-  return row(ic,r.kind==='send'&&inn,t,s,r.memo,sw?'+'+nf(r.amount2)+' '+NAME[r.token2]:(plus?'+':'−')+nf(r.amount)+' '+NAME[r.token],plus||sw?'in':'')}).join('')}
+  return row(ic,(r.kind==='send'||r.kind==='p2p')&&inn,t,s,r.memo,sw?'+'+nf(r.amount2)+' '+NAME[r.token2]:(plus?'+':'−')+nf(r.amount)+' '+NAME[r.token],plus||sw?'in':'')}).join('')}
 /* ---------- обновление данных (один запрос /api/state) ---------- */
 let LASTIN=0;
 function paint(){if(!ME)return;$('#ini').textContent=ini();TOT=(ME.gram+ME.staked)*PR.gram+ME.usdt*PR.usdt;
@@ -46,21 +46,32 @@ function dust(){const c1=$('#c1'),cn=$('#dust'),r=c1.getBoundingClientRect(),w=c
   for(const p of P){const a=e-p.d;if(a<0){ctx.fillStyle='rgba('+p.c+',.5)';ctx.fillRect(p.x,p.y,p.s,p.s);n++;continue}
    const k=a/p.l;if(k>=1)continue;n++;ctx.fillStyle='rgba('+p.c+','+(.75*(1-k)).toFixed(2)+')';ctx.fillRect(p.x+p.vx*a*.06*(1+k*2),p.y+p.vy*a*.06-k*k*14,p.s,p.s)}
   if(n&&e<2800)requestAnimationFrame(f);else ctx.clearRect(0,0,w,h)})(t0)}
-function applyPriv(anim){if(anim&&PRIV)dust();$('#c1').classList.toggle('hid',PRIV);$('#cards').classList.toggle('hid',PRIV);$('#eye').classList.toggle('on',PRIV);document.body.classList.toggle('priv',PRIV);if(ME)paint()}
+/* карта: сворачивание при прокрутке и скрытие (как на видео) */
+const CPS={v:0,anim:0};
+function setCP(v){CPS.v=Math.max(0,Math.min(1,v));$('#cards').style.setProperty('--cp',CPS.v);$('#c1').classList.toggle('cmp',CPS.v>.6)}
+function animCP(to,ms){cancelAnimationFrame(CPS.anim);const from=CPS.v,t0=performance.now();(function f(t){const k=Math.min(1,(t-t0)/ms),e=1-Math.pow(1-k,3);setCP(from+(to-from)*e);if(k<1)CPS.anim=requestAnimationFrame(f)})(t0)}
+const DHP=()=>30.5*Math.min(innerWidth/100,4.6);
+(()=>{const p=$('#p0');let ly=0,vy=0,drag=false,wt=0;
+ p.addEventListener('touchstart',e=>{ly=e.touches[0].clientY;vy=0;drag=false;cancelAnimationFrame(CPS.anim)},{passive:true});
+ p.addEventListener('touchmove',e=>{if(PRIV)return;const y=e.touches[0].clientY,dy=y-ly;ly=y;vy=dy;
+  if((dy<0&&CPS.v<1)||(dy>0&&CPS.v>0&&p.scrollTop<=0)){setCP(CPS.v-dy/DHP());drag=true;if(e.cancelable)e.preventDefault()}},{passive:false});
+ p.addEventListener('touchend',()=>{if(!drag||PRIV)return;animCP(vy<-4?1:vy>4?0:(CPS.v>.5?1:0),340)},{passive:true});
+ p.addEventListener('wheel',e=>{if(PRIV)return;if((e.deltaY>0&&CPS.v<1)||(e.deltaY<0&&CPS.v>0&&p.scrollTop<=0)){e.preventDefault();setCP(CPS.v+e.deltaY/DHP());clearTimeout(wt);wt=setTimeout(()=>animCP(CPS.v>.5?1:0,260),120)}},{passive:false})})();
+function applyPriv(anim){document.body.classList.toggle('priv',PRIV);if(anim){if(PRIV){$('#cards').classList.add('dusting');dust();setTimeout(()=>animCP(1,800),420);setTimeout(()=>$('#cards').classList.remove('dusting'),1600)}else animCP(0,620)}else setCP(PRIV?1:0);if(ME)paint()}
 function setPriv(v,anim){PRIV=v;localStorage.setItem('priv',v?'1':'0');applyPriv(anim)}
-$('#eye').onclick=e=>{e.stopPropagation();setPriv(!PRIV,true)};
-$('#c1').addEventListener('click',e=>{if(PRIV&&!e.target.closest('#eye'))setPriv(false)});
+$$('.rt.amt').forEach(el=>el.addEventListener('click',ev=>{ev.stopPropagation();setPriv(!PRIV,true)},true));
+$('#c1').addEventListener('click',()=>{if(PRIV)setPriv(false,true);else if(CPS.v>.6)animCP(0,520)});
 /* ---------- всплывающие окна: валюта и меню кошелька ---------- */
 function closePop(){if(POP){const d=POP;POP=null;d.classList.remove('on');setTimeout(()=>d.remove(),260)}}
 function popup(html,top){closePop();top-=$('#app').getBoundingClientRect().top;const d=document.createElement('div');d.className='popw';d.innerHTML=`<div class="popb"></div><div class="pop glass" style="top:${top}px">${html}</div>`;
  $('#app').appendChild(d);d.querySelector('.popb').onclick=closePop;requestAnimationFrame(()=>d.classList.add('on'));POP=d;return d}
-function curPop(){if(PRIV)return;const r=$('#c1').getBoundingClientRect(),d=popup(Object.keys(CUR).map(k=>`<button class="cr ${k===CURK?'on':''}" data-k="${k}"><i class="rd"></i><div><b>${CUR[k][0]}</b><span>${cv(TOT,k)}</span></div></button>`).join(''),r.top+r.height*.42);
+function curPop(){if(PRIV||CPS.v>.6)return;const r=$('#c1').getBoundingClientRect(),d=popup(Object.keys(CUR).map(k=>`<button class="cr ${k===CURK?'on':''}" data-k="${k}"><i class="rd"></i><div><b>${CUR[k][0]}</b><span>${cv(TOT,k)}</span></div></button>`).join(''),r.top+r.height*.42);
  d.querySelectorAll('.cr').forEach(b=>b.onclick=()=>{CURK=b.dataset.k;localStorage.setItem('cur',CURK);$('#bal').dataset.v=0;paint();closePop()})}
 function walletPop(){const r=$('#c1').getBoundingClientRect(),a=ME.address,short=a.slice(0,6)+'···'+a.slice(-6),
  d=popup(`<button class="mr" id="m1">${IMG('share')}<span>Ссылка на кошелёк</span></button><div class="mr sep">${IMG('ton')}<div style="flex:1;min-width:0"><b>TON</b><small>${short}</small></div><button class="mb" id="m2"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="3"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg></button><button class="mb" id="m3" style="color:#3d9bff"><svg viewBox="0 0 30 30"><rect x="3" y="3" width="9" height="9" rx="2"/><rect x="18" y="3" width="9" height="9" rx="2"/><rect x="3" y="18" width="9" height="9" rx="2"/><path d="M19 19h1M25 19h1M19 25h1M25 25h1M22 22h1"/></svg></button></div><button class="mr" id="m4"><span class="stk">${IMG('ton')}${IMG('telegram')}${IMG('gear')}</span><span>Все блокчейны</span><svg class="chev" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>`,r.bottom-r.height*.2);
  d.querySelector('#m1').onclick=()=>{copyT('ton://transfer/'+a);closePop()};d.querySelector('#m2').onclick=()=>{copyT(a);closePop()};
  d.querySelector('#m3').onclick=()=>{closePop();deposit()};d.querySelector('#m4').onclick=()=>{closePop();deposit()}}
-$('#balb').onclick=e=>{e.stopPropagation();curPop()};$('#cnm').onclick=e=>{e.stopPropagation();if(ME)walletPop()};
+$('#balb').onclick=e=>{e.stopPropagation();if(PRIV){setPriv(false,true);return}if(CPS.v>.6){animCP(0,520);return}curPop()};$('#cnm').onclick=e=>{e.stopPropagation();if(ME)walletPop()};
 /* ---------- пополнить ---------- */
 let QRL=null;const loadQR=()=>QRL||(QRL=new Promise(r=>{const s=document.createElement('script');s.src='qrcode.js';s.onload=r;document.head.appendChild(s)}));
 async function deposit(){await loadQR();const a=ME.address,NET=['TON','Bitcoin','Ethereum','Solana'];
@@ -93,12 +104,12 @@ function series(t,k,n){let s=(t==='gram'?7:3)*977+k.length*131+n;const r=()=>(s=
 function tokScr(t){const isG=t==='gram';let R=5,data=[],dim=0;
  const d=scr(`<div class="hd"><button class="ib" onclick="back()">${ARR}</button><div class="ht"><h1 id="h1">${isG?'Gram':'Tether USD'}</h1><div class="hb" id="hb"><b>${nf(ME[t],4)} ${NAME[t]}</b><span>${cv(ME[t]*PR[t])}</span></div></div><button class="ib" id="tm"><svg viewBox="0 0 24 24" style="fill:#bbb;stroke:none"><circle cx="12" cy="5" r="1.800"/><circle cx="12" cy="12" r="1.800"/><circle cx="12" cy="19" r="1.800"/></svg></button></div>
  <div class="sbody" style="padding:0 0 calc(var(--u)*22)" id="tb"><div class="hero"><div class="big" id="tb0">${isG?IMG('gram'):USDT}</div><h2><span id="tbv" data-v="0">0</span> <small>${NAME[t]}</small></h2><p>${cv(ME[t]*PR[t])}</p></div>
- <div class="acts" style="padding-top:calc(var(--u)*4)"><button class="act" onclick="deposit()"><i class="glass"><svg viewBox="0 0 34 34"><path d="M17 5v24M5 17h24"/></svg></i>Пополнить</button><button class="act" onclick="sendScr()"><i class="glass"><svg viewBox="0 0 34 34"><path d="M17 29V6M7 15l10-10 10 10"/></svg></i>Отправить</button><button class="act" onclick="trade('${t}','${isG?'usdt':'gram'}')"><i class="glass"><svg viewBox="0 0 34 34"><path d="M5 12h24M23 6l6 6M29 22H5M11 28l-6-6"/></svg></i>Торговля</button><button class="act" onclick="stakeScr()"><i class="glass"><svg viewBox="0 0 34 34"><ellipse cx="17" cy="10" rx="9" ry="5"/><path d="M8 10v4c0 3 4 5 9 5s9-2 9-5v-4M8 19v4c0 3 4 5 9 5s9-2 9-5v-4"/></svg></i>Стейкинг</button></div>
+ <div class="acts sticky" style="padding-top:calc(var(--u)*4)"><button class="act" onclick="deposit()"><i class="glass"><svg viewBox="0 0 34 34"><path d="M17 5v24M5 17h24"/></svg></i>Пополнить</button><button class="act" onclick="sendScr()"><i class="glass"><svg viewBox="0 0 34 34"><path d="M17 29V6M7 15l10-10 10 10"/></svg></i>Отправить</button><button class="act" onclick="trade('${t}','${isG?'usdt':'gram'}')"><i class="glass"><svg viewBox="0 0 34 34"><path d="M5 12h24M23 6l6 6M29 22H5M11 28l-6-6"/></svg></i>Торговля</button><button class="act" onclick="stakeScr()"><i class="glass"><svg viewBox="0 0 34 34"><ellipse cx="17" cy="10" rx="9" ry="5"/><path d="M8 10v4c0 3 4 5 9 5s9-2 9-5v-4M8 19v4c0 3 4 5 9 5s9-2 9-5v-4"/></svg></i>Стейкинг</button></div>
  <div class="panel glass" style="padding:calc(var(--u)*3.6) 0 calc(var(--u)*3)"><div style="padding:0 calc(var(--u)*4);color:var(--muted);font-size:calc(var(--u)*4.2)">Цена</div><div style="padding:0 calc(var(--u)*4);font-size:calc(var(--u)*5);font-weight:600" id="cp"></div><div class="cht" id="cht"></div><div class="tl" id="tl"></div><div class="rng glass" id="rng">${RNG.map((r,i)=>`<button class="${i===5?'on':''}">${r[0]}</button>`).join('')}</div></div>
  <div class="panel glass" style="padding:calc(var(--u)*3.6) calc(var(--u)*4)"><div class="ihd" id="ih"><span>Информация</span><svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></div><p id="ip" style="margin:calc(var(--u)*1.4) 0 0;font-size:calc(var(--u)*4.4);line-height:1.55">${isG?'Gram — нативная монета блокчейна TON. Её можно отправлять, обменивать и ставить в стейкинг с доходностью 13.91% годовых.':'Tether USD (USD₮) — стейблкоин в сети TON, привязанный к доллару США.'}</p></div></div>
  <button class="cta green" onclick="trade('${isG?'usdt':'gram'}','${t}')">Купить</button>`,'r');
  count(d.querySelector('#tbv'),ME[t],x=>nf(x,4));
- const sb=d.querySelector('#tb');sb.onscroll=()=>d.classList.toggle('sc',sb.scrollTop>150);
+ const sb=d.querySelector('#tb');sb.onscroll=()=>d.style.setProperty('--p',Math.min(1,sb.scrollTop/(26*UPX())));
  const big=d.querySelector('#tb0');if(isG){const ov=document.createElement('div');ov.className='ov';big.appendChild(ov);const tap=async()=>{const a=await mount(ov,'gram_tap',{loop:false});if(a)a.addEventListener('complete',()=>{ov.innerHTML=''})};big.onclick=tap;setTimeout(tap,450)}
  const draw=()=>{const[n,k,days]=[RNG[R][1],RNG[R][2],RNG[R][3]];data=series(t,k,n);const mn=Math.min(...data),mx=Math.max(...data),W=300,H=100,sp=mx-mn||1,
   pts=data.map((v,i)=>[i*W/(n-1),H-(v-mn)/sp*(H-14)-6]),ln=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(''),dn=data[n-1]<data[0],c=dn?'#3d9bff':'#3ddc84';
